@@ -1,10 +1,5 @@
 package dao;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -47,54 +42,4 @@ public class UserDAO extends AbstractDAO<User> {
 		}
 		return null;
 	}
-	
-//	public User updateByEmail(User user) {
-//		Connection connection = null;
-//		PreparedStatement statement = null;
-//		String query = createUpdateQuery("email");
-//		try {
-//			connection = ConnectionFactory.getConnection();
-//			statement = connection.prepareStatement(query);
-//			
-//			// Fill in the fields
-//			int currentIndex = 1;
-//			try {
-//				for (Field field : User.class.getDeclaredFields()) {
-//					field.setAccessible(true);
-//					Object fieldValue = field.get(user);
-//					statement.setObject(currentIndex++, fieldValue);
-//				}
-//			} catch (SecurityException e) { // TODO: don't just catch everything and do nothing!
-//				e.printStackTrace();
-//			} catch (IllegalAccessException e) {
-//				e.printStackTrace();
-//			} catch (IllegalArgumentException e) {
-//				e.printStackTrace();
-//			}
-//			
-//			try {
-//				PropertyDescriptor emailDescr = new PropertyDescriptor("email", User.class);
-//				Method getEmail = emailDescr.getReadMethod();
-//				Object email = getEmail.invoke(user);
-//				statement.setObject(currentIndex, email);
-//			} catch(IntrospectionException e) { // TODO: do something on catch!
-//				e.printStackTrace();
-//			} catch (IllegalAccessException e) {
-//				e.printStackTrace();
-//			} catch (IllegalArgumentException e) {
-//				e.printStackTrace();
-//			} catch (InvocationTargetException e) {
-//				e.printStackTrace();
-//			}
-//
-//			statement.executeUpdate();
-//		} catch (SQLException e) {
-//			LOGGER.log(Level.WARNING, "UserDAO:insert " + e.getMessage());
-//		} finally {
-//			ConnectionFactory.close(statement);
-//			ConnectionFactory.close(connection);
-//		}
-//		
-//		return user;
-//	}
 }

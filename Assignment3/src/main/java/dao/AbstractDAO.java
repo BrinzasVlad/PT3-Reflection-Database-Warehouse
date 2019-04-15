@@ -28,13 +28,19 @@ import connection.ConnectionFactory;
 public class AbstractDAO<T> {
 	protected static final Logger LOGGER = Logger.getLogger(AbstractDAO.class.getName());
 
-	private final Class<T> type;
+	private final Class<?> type;
 
 	//@SuppressWarnings("unchecked") // It's good to see all of your warnings so you can fix them someday
 	public AbstractDAO() {
-		this.type = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+		this.type = (Class<?>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 		// VERY VERY IMPORTANT NOTE: BECAUSE OF THIS LINE, YOU ABSOLUTELY
 		// CANNOT INSTANTIATE AN ACTUAL AbstractDAO<T> OBJECT, ELSE IT WILL CRASH!
+		// ...
+		// Unless you use the other constructor, that is.
+	}
+	
+	public AbstractDAO(Class<?> type) {
+		this.type = type;
 	}
 
 	/**
@@ -89,6 +95,7 @@ public class AbstractDAO<T> {
 	 * <b>UPDATE</b> &lt;table&gt;			<br>
 	 * <b>SET</b> (&lt;param&gt; = ?, ...) 	<br>
 	 * <b>WHERE</b> &lt;field name&gt; = ?  <br>
+	 * to be used for creating a {@link PreparedStatement}
 	 * @param whereFieldName - name of the field to be checked for
 	 * 						   in the WHERE clause
 	 * @return A String containing the UPDATE query
@@ -105,6 +112,27 @@ public class AbstractDAO<T> {
 			cols.add(field.getName() + " = ?");
 		}
 		sb.append(cols.toString());
+		
+		sb.append(" WHERE ");
+		sb.append(whereFieldName);
+		sb.append(" = ?");
+		
+		return sb.toString();
+	}
+	
+	/**
+	 * Creates an SQL query of the type  	<br>
+	 * <b>DELETE FROM</b> &lt;table&gt;     <br>
+	 * <b>WHERE</b> &lt;field name&gt; = ?  <br>
+	 * to be used for creating a {@link PreparedStatement}
+	 * @param whereFieldName - name of the field to be checked for
+	 * 						   in the WHERE clause
+	 * @return A String containing the DELETE query
+	 */
+	protected String createDeleteQuery(String whereFieldName) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("DELETE FROM ");
+		sb.append("`" + type.getSimpleName() + "`");
 		
 		sb.append(" WHERE ");
 		sb.append(whereFieldName);
@@ -289,13 +317,51 @@ public class AbstractDAO<T> {
 
 			statement.executeUpdate();
 		} catch (SQLException e) {
-			LOGGER.log(Level.WARNING, type.getName() + "DAO:insert " + e.getMessage());
+			LOGGER.log(Level.WARNING, type.getName() + "DAO:update " + e.getMessage());
 		} finally {
 			ConnectionFactory.close(statement);
 			ConnectionFactory.close(connection);
 		}
 		
 		return t;
+	}
+	
+	/**
+	 * Deletes the given element from the database. Note that this
+	 * method assumes that an element with the same id as the one
+	 * received exists in the database.
+	 * @param t - the element to be deleted from the database
+	 */
+	public void delete(T t) {
+		Connection connection = null;
+		PreparedStatement statement = null;
+		String query = createDeleteQuery("id"); // Delete objects by id by default
+		try {
+			connection = ConnectionFactory.getConnection();
+			statement = connection.prepareStatement(query);
+			
+			try {
+				PropertyDescriptor idDescr = new PropertyDescriptor("id", type); // We presume this field exists!!
+				Method getId = idDescr.getReadMethod();
+				Object id = getId.invoke(t);
+				statement.setObject(1, id);
+			} catch(IntrospectionException e) { // TODO: do something on catch!
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			LOGGER.log(Level.WARNING, type.getName() + "DAO:delete " + e.getMessage());
+		} finally {
+			ConnectionFactory.close(statement);
+			ConnectionFactory.close(connection);
+		}
 	}
 
 	/**
@@ -309,7 +375,7 @@ public class AbstractDAO<T> {
 
 		try {
 			while (resultSet.next()) {
-				T instance = type.newInstance();
+				T instance = (T) type.newInstance(); // We get one warning here in exchange for lots of peace
 				for (Field field : type.getDeclaredFields()) {
 					Object value = resultSet.getObject(field.getName());
 					field.setAccessible(true);
