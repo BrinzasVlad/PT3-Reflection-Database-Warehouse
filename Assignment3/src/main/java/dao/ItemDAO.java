@@ -11,6 +11,10 @@ import connection.ConnectionFactory;
 import model.Item;
 
 public class ItemDAO extends AbstractDAO<Item> {
+	public ItemDAO() {
+		super(Item.class);
+	}
+	
 	/**
 	 * Finds an Item in the database given its name. Note that
 	 * this method assumes that at most one such item exists.

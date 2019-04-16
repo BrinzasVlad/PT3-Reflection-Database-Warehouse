@@ -30,7 +30,11 @@ public class AbstractDAO<T> {
 
 	private final Class<?> type;
 
-	//@SuppressWarnings("unchecked") // It's good to see all of your warnings so you can fix them someday
+	/**
+	 * @Deprecated Usage of this constructor is not recommended, as it relies on
+	 * a complicated and somewhat unreliable construction that serves to deduce
+	 * a parameter that would be very, very simple to just receive.
+	 * **/
 	public AbstractDAO() {
 		this.type = (Class<?>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 		// VERY VERY IMPORTANT NOTE: BECAUSE OF THIS LINE, YOU ABSOLUTELY
@@ -75,7 +79,8 @@ public class AbstractDAO<T> {
 		sb.append("INSERT INTO ");
 		sb.append("`" + type.getSimpleName() + "`");
 		
-		// Generate the list of column names reflexively. Also prepare the question marks in advance.
+		// Generate the list of column names reflexively.
+		// Also prepare the question marks in advance.
 		StringJoiner cols = new StringJoiner(", ", " (", ") ");
 		StringJoiner questionMarks = new StringJoiner(", ", " (", ") ");
 		for (Field field : type.getDeclaredFields()) {

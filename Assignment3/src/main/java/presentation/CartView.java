@@ -3,6 +3,7 @@ package presentation;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -107,19 +108,24 @@ public class CartView extends JFrame {
 	
 	/**
 	 * Returns the currently selected row in the view's table.
-	 * @return The number of the selected row
+	 * Returns -1 if no row is selected
+	 * @return The number of the selected row or -1
 	 */
 	public int getSelectedRow() {
-		return table.getSelectedRow();
+		int row = table.getSelectedRow();
+		if(row < 0 || row >= table.getRowCount()) return -1; // Garbage data, somehow, or unselected
+		else return row;
 	}
 	
 	/**
 	 * Returns the data associated to the currently
-	 * selected row in the view's table.
-	 * @return The currently selected element
+	 * selected row in the view's table or null if
+	 * there is no currently selected row.
+	 * @return The currently selected element or null
 	 */
 	public OrderItemDTO getSelectedRowData() {
-		return tableModel.getValueAtRow(table.getSelectedRow());
+		if(-1 == getSelectedRow()) return null;
+		else return tableModel.getValueAtRow(getSelectedRow());
 	}
 	
 	/**
@@ -234,8 +240,15 @@ public class CartView extends JFrame {
 			}
 		}
 		
-		public Class<?> getColumnClass(int c) {
-            return getValueAt(0, c).getClass();
+		public Class<?> getColumnClass(int col) {
+			switch(col) {
+				case 0: return Integer.class; // Id
+				case 1: return Integer.class; // OrderId
+				case 2: return String.class; // ItemName
+				case 3: return Integer.class; // Amount
+				case 4: return BigDecimal.class; // Subtotal
+				default: return null;
+			}
         }
 		
 		public boolean isCellEditable(int row, int col) {

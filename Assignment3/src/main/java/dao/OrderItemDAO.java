@@ -11,6 +11,10 @@ import connection.ConnectionFactory;
 import model.OrderItem;
 
 public class OrderItemDAO extends AbstractDAO<OrderItem> {
+	public OrderItemDAO() {
+		super(OrderItem.class);
+	}
+	
 	/**
 	 * Finds all the OrderItem objects associated with the given
 	 * Order's id.

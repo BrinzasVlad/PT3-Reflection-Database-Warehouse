@@ -76,7 +76,7 @@ public class OrderManager implements AbstractManager<OrderDTO> {
 		
 		List<OrderItem> orderItems = oiDao.findByOrderId(o.getId());
 		for(OrderItem oi : orderItems) {
-			noOfItems++;
+			noOfItems += oi.getAmount();
 			totalPrice = totalPrice.add(iDao.findById(oi.getItem_id()).getPrice()
 						   		        .multiply(new BigDecimal( oi.getAmount()) ));
 		}

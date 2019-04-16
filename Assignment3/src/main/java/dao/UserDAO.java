@@ -11,6 +11,10 @@ import connection.ConnectionFactory;
 import model.User;
 
 public class UserDAO extends AbstractDAO<User> {
+	public UserDAO() {
+		super(User.class);
+	}
+	
 	/**
 	 * Finds a user based on the given e-mail address.
 	 * Note that this method assumes that there is at

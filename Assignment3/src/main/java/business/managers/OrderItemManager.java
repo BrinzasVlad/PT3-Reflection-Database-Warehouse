@@ -70,6 +70,11 @@ public class OrderItemManager implements AbstractManager<OrderItemDTO> {
 		return oi;
 	}
 	
+	/**
+	 * Converts an element to a DTO.
+	 * @param oi - the OrderItem to convert
+	 * @return An OrderItemDTO with the relevant data
+	 */
 	private OrderItemDTO elemToDto(OrderItem oi) {
 		OrderItemDTO dto = new OrderItemDTO();
 		// Transmitted

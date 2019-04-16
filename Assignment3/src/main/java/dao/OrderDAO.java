@@ -11,6 +11,10 @@ import connection.ConnectionFactory;
 import model.Order;
 
 public class OrderDAO extends AbstractDAO<Order> {
+	public OrderDAO() {
+		super(Order.class);
+	}
+	
 	/**
 	 * Finds all the orders in the database associated
 	 * with the given user id.

@@ -115,19 +115,24 @@ public class GenericView<T> extends JFrame {
 	
 	/**
 	 * Returns the currently selected row in the view's table.
-	 * @return The number of the selected row
+	 * Returns -1 if no row is selected
+	 * @return The number of the selected row or -1
 	 */
 	public int getSelectedRow() {
-		return table.getSelectedRow();
+		int row = table.getSelectedRow();
+		if(row < 0 || row >= table.getRowCount()) return -1; // Garbage data, somehow, or unselected
+		else return row;
 	}
 	
 	/**
 	 * Returns the data associated to the currently
-	 * selected row in the view's table.
-	 * @return The currently selected element
+	 * selected row in the view's table or null if
+	 * there is no currently selected row.
+	 * @return The currently selected element or null
 	 */
 	public T getSelectedRowData() {
-		return getDataAt(table.getSelectedRow());
+		if(-1 == getSelectedRow()) return null;
+		else return getDataAt(getSelectedRow());
 	}
 	
 	/**
@@ -283,17 +288,14 @@ public class GenericView<T> extends JFrame {
         
         public void setDataAtRow(int row, T elem) {
         	data.set(row, elem);
-        	//fireTableDataChanged();
         }
         
         public void addDataRow(T elem) {
         	data.add(elem);
-        	//fireTableDataChanged();
         }
         
         public void deleteDataRow(int row) {
         	data.remove(row);
-        	//fireTableDataChanged();
         }
         
         public void updateData(T elem) {

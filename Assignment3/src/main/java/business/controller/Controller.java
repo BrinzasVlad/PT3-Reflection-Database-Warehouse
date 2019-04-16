@@ -55,17 +55,17 @@ public class Controller {
 	 * Adds the needed listeners to all the non-changing views.
 	 */
 	private void addListeners() {
-		itemView.attachChangedListener(new ChangeListener<ItemDTO>(itemMan, itemView));
-		userView.attachChangedListener(new ChangeListener<UserDTO>(userMan, userView));
-		orderView.attachChangedListener(new ChangeListener<OrderDTO>(orderMan, orderView));
+		itemView.attachChangedListener(new ChangeListener<ItemDTO>(itemMan, itemView, mainView, LabelType.ITEM));
+		userView.attachChangedListener(new ChangeListener<UserDTO>(userMan, userView, mainView, LabelType.USER));
+		orderView.attachChangedListener(new ChangeListener<OrderDTO>(orderMan, orderView, mainView, LabelType.ORDER));
 		
 		itemView.attachSelectionListener(new SelectionListener<ItemDTO>(itemView, mainView, LabelType.ITEM));
 		userView.attachSelectionListener(new SelectionListener<UserDTO>(userView, mainView, LabelType.USER));
 		orderView.attachSelectionListener(new SelectionListener<OrderDTO>(orderView, mainView, LabelType.ORDER));
 		
-		itemView.attachDeleteListener(new DeleteListener<ItemDTO>(itemMan, itemView));
-		userView.attachDeleteListener(new DeleteListener<UserDTO>(userMan, userView));
-		orderView.attachDeleteListener(new DeleteListener<OrderDTO>(orderMan, orderView));
+		itemView.attachDeleteListener(new DeleteListener<ItemDTO>(itemMan, itemView, mainView, LabelType.ITEM));
+		userView.attachDeleteListener(new DeleteListener<UserDTO>(userMan, userView, mainView, LabelType.USER));
+		orderView.attachDeleteListener(new DeleteListener<OrderDTO>(orderMan, orderView, mainView, LabelType.ORDER));
 		
 		itemView.attachAddListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -160,6 +160,11 @@ public class Controller {
 						
 						// Update the Order
 						orderView.updateData(orderMan.getById(cartView.getOrderId()));
+						
+						// Update the MainView
+						OrderDTO selectedOrder = orderView.getSelectedRowData();
+						if(null == selectedOrder) mainView.setOrderLabel(null);
+						else mainView.setOrderLabel(selectedOrder.toString());
 					} catch (IndexOutOfBoundsException ex) {
 						; // If we got here, it means we couldn't select a good Order
 						// In that case, simply abort and that's it
@@ -189,6 +194,11 @@ public class Controller {
 
 					// Update the Order
 					orderView.updateData(orderMan.getById(cartView.getOrderId()));
+					
+					// Update the MainView
+					OrderDTO selectedOrder = orderView.getSelectedRowData();
+					if(null == selectedOrder) mainView.setOrderLabel(null);
+					else mainView.setOrderLabel(selectedOrder.toString());
 				}
 			});
 			
