@@ -1,0 +1,9 @@
+Receipt
+Order 4
+Date: Tue Apr 16 13:21:45 EEST 2019
+Client: rob@twain.co.uk
+
+30 x Chewing Gum........................21.30
+14 x Apple Cider........................140.28
+
+Total: 161.58
